@@ -17,8 +17,7 @@ class Bubble:
         self.pbubble=randrange(7,20)
         self.pbubbletype=0
         if self.pbubble == 18:
-            pbubbletype=randrange(1,6)
-
+            pbubbletype=randrange(1,7)
             self.pbubbletype=pbubbletype
             self.polygon.setFill('lightcyan')
             if pbubbletype==1:
@@ -55,6 +54,7 @@ class Bubble:
 
     def pop(self,pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions):
         if self.pbubbletype == 1:
+                print("Needles!")
                 upneedle=Pneedle(self.win,self.x,self.y,0,28,0,24)
                 uprightneedle=Pneedle(self.win,self.x,self.y,21,21,18,18)
                 rightneedle=Pneedle(self.win,self.x,self.y,28,0,24,0)
@@ -79,7 +79,6 @@ class Bubble:
                 downleftneedle=Pneedle(self.win,self.x,self.y,-21,-21,-12,-12)
                 leftneedle=Pneedle(self.win,self.x,self.y,-28,0,-16,0)
                 upleftneedle=Pneedle(self.win,self.x,self.y,-21,21,-12,12)
-
                 pneedles.append(upneedle)
                 pneedles.append(uprightneedle)
                 pneedles.append(rightneedle)
@@ -90,25 +89,29 @@ class Bubble:
                 pneedles.append(upleftneedle)
         if self.pbubbletype == 2:
             if self.y > 100:
+                print("ELECTRIFYING!")
                 squarebeam = Pelecbeam(self.win,self.x,self.y,80,80)
                 pbeams.append(squarebeam)
         if self.pbubbletype == 3:
             if self.y > 115:
+                print("It's spreading")
                 for i in range(randrange(8,15)):
                     mine = Pmine(self.win,self.x+randrange(-8,8)*(i+2*4),self.y+randrange(-8,8)*(i+2*4))
                     pmines.append(mine)
         if self.pbubbletype == 4:
+            print("Have more Bubbles for your Troubles")
             for i in range(randrange(6,11)):
                 bubble=Bubble(self.win,self.x+randrange(-90,90),self.y+randrange(-90,90))
                 bubble.yvel=1
                 bubbles.append(bubble)
         if self.pbubbletype == 5:
+            print("Mine has been deployed")
             exmine = Pbombmine(self.win,self.x,self.y)
             pbombmines.append(exmine)
         if self.pbubbletype == 6:
+            print("MY EYES!!")
             flashexplosion = Pflash(self.win,self.x,self.y)
             pexplosions.append(flashexplosion)
-
 
        
 
@@ -198,7 +201,10 @@ class Pflash:
         self.polygon=Circle(Point(x,y),126)
         self.polygon.setFill('papayawhip')
         self.polygon.draw(win)
-        self.mineexplosiontimer=0
+        self.explosiontimer=0
+
+    def undraw(self):
+        self.polygon.undraw()
 
 
 def main():
@@ -290,6 +296,7 @@ def main():
                     bubble.pop(pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions)
                     if bubble in bubbles:
                         bubble.undraw()
+                        print("That's gotta hurt!")
                         bubblespeedincrease+=0.005
                     if bubble in bubbles:
                         bubbles.remove(bubble)
@@ -300,6 +307,7 @@ def main():
                     bubble.pop(pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions)
                     if bubble in bubbles:
                         bubble.undraw()
+                        print("ENERGIZE!")
                     if bubble in bubbles:
                         bubbles.remove(bubble)
             beam.electimer+=1
@@ -314,6 +322,7 @@ def main():
                     bubble.pop(pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions)
                     if bubble in bubbles:
                         bubble.undraw()
+                        print("TERMINATED")
                         bubbles.remove(bubble)
                     if mine in pmines:
                         mine.undraw()
@@ -336,11 +345,24 @@ def main():
                     bubble.pop(pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions)
                     if bubble in bubbles:
                         bubble.undraw()
+                       
                         bubbles.remove(bubble)
             mineexplosion.mineexplosiontimer+=1
             if mineexplosion.mineexplosiontimer==5:
                 mineexplosion.undraw()
                 pmineexplosions.remove(mineexplosion)
+
+        for flashexplosion in pexplosions:
+            for bubble in bubbles:
+                if abs(flashexplosion.x-bubble.x)<bubble.size+130 and abs(flashexplosion.y-bubble.y)<bubble.size+130:
+                    bubble.pop(pneedles,pbeams,pmines,bubbles,pbombmines,pmineexplosions,pexplosions)
+                    if bubble in bubbles:
+                        bubble.undraw()
+                        bubbles.remove(bubble)
+            flashexplosion.explosiontimer+=1
+            if flashexplosion.explosiontimer==5:
+                flashexplosion.undraw()
+                pexplosions.remove(flashexplosion)
 
 
 main()
